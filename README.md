@@ -24,6 +24,7 @@ This project helps you manage daily expenses by allowing you to add, view, and d
 
 ## How to Run
 1. Clone the Repository
+
 git clone https://github.com/your-username/expense-tracker.git
 cd expense-tracker
 
@@ -38,8 +39,8 @@ Choose mode:
 2. GUI
 
 
-Enter 1 for Command Line Interface
-Enter 2 for Graphical Interface (Tkinter)
+* Enter 1 for Command Line Interface
+* Enter 2 for Graphical Interface (Tkinter)
 
 ## Usage
 🔹 Add Expense
