@@ -12,9 +12,9 @@ This project helps you manage daily expenses by allowing you to add, view, and d
 * Dual Mode – Run in CLI or Tkinter GUI
 
 ## Project Structure
-├── expense_tracker.py     # Main project file
-├── expenses.csv           # Data file (auto-created on first run)
-└── README.md              # Project documentation
+├── expense_tracker.py     # Main project file/n
+├── expenses.csv           # Data file (auto-created on first run)/n
+└── README.md              # Project documentation/n
 
 ## Requirements
 
@@ -56,7 +56,6 @@ GUI: Select a row and click Delete Selected
 
 ## Data Storage
 All data is stored in expenses.csv file in the following format:
-
 ID, Date, Category, Description, Amount
 1, 2025-09-09 13:45:23, Food, Lunch at cafe, 250
 2, 2025-09-09 15:20:11, Travel, Bus ticket, 40
