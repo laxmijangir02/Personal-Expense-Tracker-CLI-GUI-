@@ -1,0 +1,149 @@
+import csv
+import os
+import tkinter as tk
+from tkinter import messagebox, ttk
+from datetime import datetime
+
+FILENAME = "expenses.csv"
+
+# ========== CSV Utility Functions ==========
+def init_file():
+    if not os.path.exists(FILENAME):
+        with open(FILENAME, "w", newline="") as file:
+            writer = csv.writer(file)
+            writer.writerow(["ID", "Date", "Category", "Description", "Amount"])
+
+
+def add_expense(category, description, amount):
+    init_file()
+    expenses = view_expenses()
+    expense_id = len(expenses) + 1
+    date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    with open(FILENAME, "a", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow([expense_id, date, category, description, amount])
+
+
+def view_expenses():
+    init_file()
+    with open(FILENAME, "r") as file:
+        reader = csv.DictReader(file)
+        return list(reader)
+
+
+def delete_expense(expense_id):
+    expenses = view_expenses()
+    updated = [exp for exp in expenses if exp["ID"] != str(expense_id)]
+    with open(FILENAME, "w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(["ID", "Date", "Category", "Description", "Amount"])
+        for i, exp in enumerate(updated, start=1):
+            writer.writerow([i, exp["Date"], exp["Category"], exp["Description"], exp["Amount"]])
+
+
+# ========== CLI ==========
+def cli():
+    while True:
+        print("\n=== Personal Expense Tracker (CLI) ===")
+        print("1. Add Expense")
+        print("2. View Expenses")
+        print("3. Delete Expense")
+        print("4. Exit")
+        choice = input("Enter choice: ")
+
+        if choice == "1":
+            category = input("Enter category: ")
+            description = input("Enter description: ")
+            amount = input("Enter amount: ")
+            add_expense(category, description, amount)
+            print("Expense added!")
+
+        elif choice == "2":
+            expenses = view_expenses()
+            print("\nID | Date | Category | Description | Amount")
+            print("-" * 60)
+            for exp in expenses:
+                print(f"{exp['ID']} | {exp['Date']} | {exp['Category']} | {exp['Description']} | {exp['Amount']}")
+
+        elif choice == "3":
+            expense_id = input("Enter Expense ID to delete: ")
+            delete_expense(expense_id)
+            print("Expense deleted!")
+
+        elif choice == "4":
+            print("Goodbye!")
+            break
+
+        else:
+            print("Invalid choice. Try again.")
+
+
+# ========== GUI ==========
+def gui():
+    def add_action():
+        category = category_entry.get()
+        description = desc_entry.get()
+        amount = amount_entry.get()
+        if category and description and amount:
+            add_expense(category, description, amount)
+            messagebox.showinfo("Success", "Expense added!")
+            refresh_table()
+        else:
+            messagebox.showwarning("Input Error", "All fields are required!")
+
+    def delete_action():
+        selected = table.selection()
+        if selected:
+            expense_id = table.item(selected[0])["values"][0]
+            delete_expense(expense_id)
+            messagebox.showinfo("Deleted", f"Expense ID {expense_id} deleted!")
+            refresh_table()
+
+    def refresh_table():
+        for row in table.get_children():
+            table.delete(row)
+        expenses = view_expenses()
+        for exp in expenses:
+            table.insert("", "end", values=(exp["ID"], exp["Date"], exp["Category"], exp["Description"], exp["Amount"]))
+
+    root = tk.Tk()
+    root.title("Expense Tracker")
+
+    # Input fields
+    tk.Label(root, text="Category:").grid(row=0, column=0)
+    category_entry = tk.Entry(root)
+    category_entry.grid(row=0, column=1)
+
+    tk.Label(root, text="Description:").grid(row=1, column=0)
+    desc_entry = tk.Entry(root)
+    desc_entry.grid(row=1, column=1)
+
+    tk.Label(root, text="Amount:").grid(row=2, column=0)
+    amount_entry = tk.Entry(root)
+    amount_entry.grid(row=2, column=1)
+
+    tk.Button(root, text="Add Expense", command=add_action).grid(row=3, column=0, columnspan=2, pady=5)
+
+    # Expense Table
+    columns = ("ID", "Date", "Category", "Description", "Amount")
+    table = ttk.Treeview(root, columns=columns, show="headings")
+    for col in columns:
+        table.heading(col, text=col)
+    table.grid(row=4, column=0, columnspan=2)
+
+    tk.Button(root, text="Delete Selected", command=delete_action).grid(row=5, column=0, columnspan=2, pady=5)
+
+    refresh_table()
+    root.mainloop()
+
+
+# ========== Main ==========
+if __name__ == "__main__":
+    print("Choose mode:")
+    print("1. CLI")
+    print("2. GUI")
+    mode = input("Enter choice: ")
+    if mode == "1":
+        cli()
+    else:
+        gui()
